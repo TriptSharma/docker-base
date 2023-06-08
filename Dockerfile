@@ -1,6 +1,5 @@
 # # syntax=docker/dockerfile:1
 
-
 # Base image
 FROM nvidia/cuda:11.7.0-cudnn8-devel-ubuntu22.04 as cuda_base
 
@@ -11,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     lsb-release
 
 # ROS base image
-FROM ros:humble-ros-core
+FROM ros:humble-ros-core as ros_base
 
 # Copy CUDA installation from cuda_base
 COPY --from=cuda_base / /
@@ -27,13 +26,24 @@ RUN apt install -y \
             wget \
             zsh \
             git \
-            gcc
+            gcc \
+            sudo \
+            python3-pip
+
+RUN pip install opencv-python pycocotools matplotlib onnxruntime onnx
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+RUN export alias python='python3'
 
 #create a new user
-RUN useradd -m -s /bin/bash 
+ARG username
+ARG password=1020
+
+RUN useradd -m -s /bin/bash $username -d /home/$username/ -G sudo  && \
+    echo "$username:$password" | chpasswd
 
 # Switch to the new user
-USER tript
+USER $username
 
 # Set the root folder as the entry point
 WORKDIR /
