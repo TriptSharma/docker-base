@@ -40,14 +40,14 @@ RUN pip install torch torchvision torchaudio --index-url https://download.pytorc
 RUN export alias python='python3'
 
 #create a new user
-ARG username
-ARG password=1020
+# ARG username
+# ARG password=1020
 
-RUN useradd -m -s /bin/bash $username -d /home/$username/ -G sudo  && \
-    echo "$username:$password" | chpasswd
+# RUN useradd -m -s /bin/bash $username -d /home/$username/ -G sudo  && \
+#     echo "$username:$password" | chpasswd
 
 # Switch to the new user
-USER $username
+# USER $username
 
 # Set the root folder as the entry point
 WORKDIR /
